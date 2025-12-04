@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include "search_algorithms.hpp"
 using namespace std;
 
 // ---------------------- Наївний пошук ----------------------
@@ -261,3 +262,4 @@ Animals are important, and people should be kind to them.)";
 
     return 0;
 }
+
