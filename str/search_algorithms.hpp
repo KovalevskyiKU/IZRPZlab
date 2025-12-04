@@ -2,29 +2,82 @@
 #include <string>
 #include <vector>
 
+/**
+ * @brief Виконує наївний пошук набору шаблонів у тексті.
+ *
+ * Для кожного слова зі словника функція шукає всі входження в тексті
+ * за допомогою std::string::find. Результати зберігаються окремо
+ * для кожного шаблону, а також повертається загальна кількість збігів.
+ *
+ * @param text Вхідний текст, у якому виконується пошук.
+ * @param patterns Набір слів (шаблонів), які потрібно знайти.
+ * @param per_pattern Вектор, у який записується кількість входжень кожного шаблону.
+ * @return Загальна кількість входжень усіх шаблонів у тексті.
+ */
 size_t naive_search(const std::string &text,
                     const std::vector<std::string> &patterns,
                     std::vector<size_t> &per_pattern);
 
-// ---- Ахо–Корасік ----
-
+/**
+ * @brief Вершина автомата Ахо–Корасіка.
+ *
+ * Містить масив переходів для символів англійського алфавіту,
+ * суфіксне посилання та список індексів шаблонів, які закінчуються
+ * в цій вершині.
+ */
 struct AhoNode {
-    static const int ALPHA = 26;
-    int next[ALPHA];
-    int link;
-    std::vector<int> out;
+    static const int ALPHA = 26; ///< Розмір алфавіту (літери a..z).
+    int next[ALPHA];            ///< Переходи за символами.
+    int link;                   ///< Суфіксне (failure) посилання.
+    std::vector<int> out;       ///< Індекси шаблонів, що закінчуються тут.
 
+    /**
+     * @brief Створює вершину з початковими значеннями для переходів та посилання.
+     */
     AhoNode();
 };
 
+/**
+ * @brief Реалізація алгоритму Ахо–Корасіка для пошуку множини шаблонів.
+ *
+ * Клас будує автомат за набором рядків (patterns) і дозволяє
+ * виконувати пошук усіх входжень цих шаблонів у тексті за один прохід.
+ */
 struct AhoCorasick {
-    std::vector<AhoNode> trie;
-    std::vector<std::string> patterns;
+    std::vector<AhoNode> trie;        ///< Масив вершин бору/автомата.
+    std::vector<std::string> patterns;///< Збережені шаблони.
 
+    /**
+     * @brief Створює автомат із початковою кореневою вершиною.
+     */
     AhoCorasick();
 
+    /**
+     * @brief Перетворює символ у індекс від 0 до 25.
+     * @param c Вхідний символ.
+     * @return Індекс символу в алфавіті або -1, якщо символ не літера.
+     */
     static int char_id(char c);
+
+    /**
+     * @brief Додає один шаблон до бору.
+     * @param s Рядок-шаблон.
+     * @param idx Індекс шаблону у векторі patterns.
+     */
     void add_pattern(const std::string &s, int idx);
+
+    /**
+     * @brief Будує автомат Ахо–Корасіка за заданим набором шаблонів.
+     * @param patterns_ Набір шаблонів, які необхідно шукати.
+     */
     void build_automaton(const std::vector<std::string> &patterns_);
+
+    /**
+     * @brief Виконує пошук усіх шаблонів у тексті.
+     *
+     * @param text Текст для пошуку.
+     * @param per_pattern Вектор, у який записується кількість входжень кожного шаблону.
+     * @return Загальна кількість входжень усіх шаблонів.
+     */
     size_t search(const std::string &text, std::vector<size_t> &per_pattern) const;
 };
